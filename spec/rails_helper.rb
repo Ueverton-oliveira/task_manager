@@ -22,6 +22,15 @@ RSpec.configure do |config|
   config.include Shoulda::Matchers::ActiveModel, type: :model
   config.include Shoulda::Matchers::ActiveRecord, type: :model
 
+  # Configs Webmock
+  config.before(:suite) do
+    WebMock.disable_net_connect!(allow_localhost: true)
+  end
+
+  config.before(:each) do
+    WebMock.reset!
+  end
+
   config.use_transactional_fixtures = true
 
   # https://rspec.info/features/6-0/rspec-rails
