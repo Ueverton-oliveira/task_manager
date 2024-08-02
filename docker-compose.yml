@@ -1,88 +1,27 @@
 version: '3'
 
 services:
-  task_manager:
-    build: ./task_manager
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: task_manager_development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
     volumes:
-      - ./task_manager:/myapp
+      - db_data:/var/lib/mysql
+
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && rails db:create && rails db:migrate && rails s -b '0.0.0.0'"
+    volumes:
+      - ".:/app"
     ports:
       - "3000:3000"
     depends_on:
-      - task_manager_db
-
-  auth_service:
-    build: ./auth_service
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
-    volumes:
-      - ./auth_service:/myapp
-    ports:
-      - "3001:3000"
-    depends_on:
-      - auth_service_db
-
-  notifications_service:
-    build: ./notifications_service
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
-    volumes:
-      - ./notifications_service:/myapp
-    ports:
-      - "3002:3000"
-    depends_on:
-      - notifications_service_db
-
-  scraping_service:
-    build: ./scraping_service
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
-    volumes:
-      - ./scraping_service:/myapp
-    ports:
-      - "3003:3000"
-    depends_on:
-      - scraping_service_db
-
-  task_manager_db:
-    image: mysql/mysql-server:8.0
-    volumes:
-      - task_manager_db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: task_manager_development
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-
-  auth_service_db:
-    image: mysql/mysql-server:8.0
-    volumes:
-      - auth_service_db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: auth_service_development
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-
-  notifications_service_db:
-    image: mysql/mysql-server:8.0
-    volumes:
-      - notifications_service_db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: notifications_service_development
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-
-  scraping_service_db:
-    image: mysql/mysql-server:8.0
-    volumes:
-      - scraping_service_db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: scraping_service_development
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
+      - db
 
 volumes:
-  task_manager_db_data:
-  auth_service_db_data:
-  notifications_service_db_data:
-  scraping_service_db_data:
+  db_data:

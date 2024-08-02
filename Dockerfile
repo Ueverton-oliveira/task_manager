@@ -1,20 +1,21 @@
 FROM ruby:3.2.2
 
-RUN apt-get update -qq && apt-get install -y nodejs mysql-client
+# Instala dependências
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
 
-WORKDIR /myapp
+# Define o diretório de trabalho
+WORKDIR /app
 
+# Copia o Gemfile e o Gemfile.lock e instala as gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
+# Copia o restante do código
 COPY . .
 
+# Expõe a porta padrão
 EXPOSE 3000
-CMD ["rails", "server", "-b", "0.0.0.0"]FROM ruby:3.2.2
-WORKDIR /usr/src/app
-COPY Gemfile Gemfile.lock ./
-RUN bundle install
-COPY . .
-EXPOSE 3000
+
+# Comando padrão para executar o servidor Rails
 CMD ["rails", "server", "-b", "0.0.0.0"]
 
