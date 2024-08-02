@@ -2,12 +2,22 @@ require 'rails_helper'
 
 RSpec.describe Task, type: :model do
   it "is valid with valid attributes" do
-    task = Task.new(title: "Sample Task", status: "pending", url: "http://example.com")
+    task = build(:task)
     expect(task).to be_valid
   end
 
-  it "is not valid without a title" do
-    task = Task.new(status: "pending", url: "http://example.com")
-    expect(task).not_to be_valid
+  it "is not valid without a name" do
+    task = build(:task, name: nil)
+    expect(task).to_not be_valid
+  end
+
+  it "is not valid without a status" do
+    task = build(:task, status: nil)
+    expect(task).to_not be_valid
+  end
+
+  it "is not valid without a url" do
+    task = build(:task, url: nil)
+    expect(task).to_not be_valid
   end
 end

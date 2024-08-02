@@ -4,7 +4,7 @@ services:
   db:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: task_manager_development
       MYSQL_USER: user
       MYSQL_PASSWORD: password

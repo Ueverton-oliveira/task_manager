@@ -2,40 +2,41 @@ require 'rails_helper'
 
 RSpec.describe TasksController, type: :controller do
   let(:user) { create(:user) }
-  let(:valid_attributes) { { title: 'Test Task', status: 'pending', url: 'http://example.com' } }
-  let(:invalid_attributes) { { title: nil, status: 'pending', url: 'http://example.com' } }
+  let(:task) { create(:task) }
 
   before do
-    request.headers['Authorization'] = "Bearer #{user.generate_jwt}"
+    session[:user_id] = user.id
   end
 
-  describe 'GET #index' do
-    it 'returns a success response' do
-      task = Task.create! valid_attributes
-      get :index, params: {}
-      expect(response).to be_successful
+  describe "GET #index" do
+    it "returns a successful response" do
+      get :index
+      expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'POST #create' do
-    context 'with valid parameters' do
-      it 'creates a new Task' do
-        expect {
-          post :create, params: { task: valid_attributes }
-        }.to change(Task, :count).by(1)
-      end
-
-      it 'returns a success response' do
-        post :create, params: { task: valid_attributes }
-        expect(response).to have_http_status(:created)
-      end
+  describe "POST #create" do
+    it "creates a new task" do
+      expect {
+        post :create, params: { task: attributes_for(:task) }
+      }.to change(Task, :count).by(1)
     end
+  end
 
-    context 'with invalid parameters' do
-      it 'returns an unprocessable entity response' do
-        post :create, params: { task: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+  describe "PATCH #update" do
+    it "updates the task" do
+      patch :update, params: { id: task.id, task: { name: 'Updated Task' } }
+      task.reload
+      expect(task.name).to eq('Updated Task')
+    end
+  end
+
+  describe "DELETE #destroy" do
+    it "deletes the task" do
+      task
+      expect {
+        delete :destroy, params: { id: task.id }
+      }.to change(Task, :count).by(-1)
     end
   end
 end

@@ -18,9 +18,7 @@ RSpec.configure do |config|
 
   # FactoryBot
   config.include FactoryBot::Syntax::Methods
-  # Include Shoulda Matchers
-  config.include Shoulda::Matchers::ActiveModel, type: :model
-  config.include Shoulda::Matchers::ActiveRecord, type: :model
+
 
   # Configs Webmock
   config.before(:suite) do
