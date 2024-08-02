@@ -14,7 +14,7 @@ RUN bundle install
 COPY . .
 
 # Expõe a porta padrão
-EXPOSE 3002
+EXPOSE 3003
 
 # Comando padrão para executar o servidor Rails
 CMD ["rails", "server", "-b", "0.0.0.0"]
