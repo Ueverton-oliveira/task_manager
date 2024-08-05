@@ -1,8 +1,13 @@
 Rails.application.routes.draw do
   root 'tasks#index'
-  resources :tasks
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
+  get '/signup', to: 'sessions#new'
+  post '/signup', to: 'sessions#create'
+  get '/login', to: 'sessions#login', as: :login
+  post '/login', to: 'sessions#authenticate'
+  delete '/logout', to: 'sessions#destroy', as: :logout
+
+  # Rota para realizar o logout
   delete 'logout', to: 'sessions#destroy'
-  resources :users, only: [:new, :create]
+
+  resources :tasks
 end
