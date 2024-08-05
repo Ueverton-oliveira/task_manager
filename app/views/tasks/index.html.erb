@@ -1,27 +1,198 @@
-<h1>Tarefas</h1>
-<table>
-  <thead>
-  <tr>
-    <th>Nome</th>
-    <th>Status</th>
-    <th>URL</th>
-    <th>Ações</th>
-  </tr>
-  </thead>
-  <tbody>
-  <% @tasks.each do |task| %>
-    <tr>
-      <td><%= task.name %></td>
-      <td><%= task.status %></td>
-      <td><%= task.url %></td>
-      <td>
-        <%= link_to 'Mostrar', task %>
-        <%= link_to 'Editar', edit_task_path(task) %>
-        <%= link_to 'Excluir', task, method: :delete, data: { confirm: 'Você tem certeza?' } %>
-      </td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+<!--<h1>Tarefas</h1>-->
+<!--<table>-->
+<!--  <thead>-->
+<!--  <tr>-->
+<!--    <th>Nome</th>-->
+<!--    <th>Status</th>-->
+<!--    <th>URL</th>-->
+<!--    <th>Ações</th>-->
+<!--  </tr>-->
+<!--  </thead>-->
+<!--  <tbody>-->
+  <%# @tasks.each do |task| %>
+<!--    <tr>-->
+<!--      <td><%#= task.name %></td>-->
+<!--      <td><%#= task.status %></td>-->
+<!--      <td><%#= task.url %></td>-->
+<!--      <td>-->
+        <%#= link_to 'Mostrar', task %>
+        <%#= link_to 'Editar', edit_task_path(task) %>
+        <%#= link_to 'Excluir', task, method: :delete, data: { confirm: 'Você tem certeza?' } %>
+<!--      </td>-->
+<!--    </tr>-->
+  <%# end %>
+<!--  </tbody>-->
+<!--</table>-->
 
-<%= link_to 'Nova Tarefa', new_task_path %>
+
+
+<!DOCTYPE html>
+<html lang="en-US" >
+<head>
+  <meta charset="UTF-8" />
+  <title> Task </title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Load Stile -->
+  <link rel="stylesheet" href="Assets/stylesheet/min.css">
+
+  <!-- Meta SEO -->
+  <meta name="keyword" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="canonical" href="" />
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<!-- Start Header -->
+<header id="main-header">
+  <div class="account">
+    <figure>
+      <div class="avatar">
+        <img src="Assets/images/avatar/man/23.jpg" alt="" class="w-100 h-100">
+        <div class="effect"></div>
+      </div>
+      <figcaption>
+        <h2 class="text-md">Ueverton Souza</h2>
+      </figcaption>
+    </figure>
+  </div>
+  <div class="search">
+    <span class="icon flaticon-search color-fff"></span>
+    <input type="text" placeholder="Search" name="search" id="search">
+  </div>
+</header>
+<!-- End Header -->
+
+<!-- Start Main Content -->
+<section class="container-fluid no-padding">
+  <div class="row wrapper no-padding">
+    <div class="col-xl-1 col-sm-2">
+      <nav class="menu-left">
+        <ul class="list">
+          <li>
+            <%= link_to root_path, class: "active" do %>
+              <span class="icon flaticon-notepad-1"></span>
+              <span class="text">Tasks</span>
+            <% end %>
+          </li>
+          <li>
+            <% if session[:auth_token].present? %>
+              <%= link_to 'Logout', logout_path, method: :delete, class: 'btn btn-danger' %>
+            <% end %>
+            <a href="#" title="">
+              <span class="icon flaticon-power"></span>
+              <span class="text">Exit</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="col-xl-11 col-sm-10">
+      <div class="main-content">
+        <header class="header-content">
+          <ul class="list list-inline">
+            <li>
+              <a href="" title="">
+                <span class="state red"></span>
+                <span>Bug</span>
+              </a>
+            </li>
+            <li>
+              <a href="" title="">
+                <span class="state yellow"></span>
+                <span>Story</span>
+              </a>
+            </li>
+            <li>
+              <a href="" title="">
+                <span class="state green"></span>
+                <span>Task</span>
+              </a>
+            </li>
+          </ul>
+          <div class="action">
+            <button class="btn btn-blue">
+              <span class="flaticon-add"></span>
+              <%= link_to 'Nova Tarefa', new_task_path, data: { turbo_frame: 'modal' } %>
+            </button>
+          </div>
+        </header>
+        <div class="dashboard">
+          <div class="row">
+            <div class="col-xl-3 col-sm-6">
+              <article class="board red">
+                <header>
+                  <h4>Pendentes <span>(<%= @pending_tasks.count %>)</span></h4>
+                  <span class="icon flaticon-more-1"></span>
+                </header>
+                <div class="board-content">
+                  <ul class="list">
+                    <%= render @pending_tasks %>
+                  </ul>
+                </div>
+              </article>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <article class="board yellow">
+                <header>
+                  <h4>Em progresso <span>(<%= @in_progress_tasks.count %>)</span></h4>
+                  <span class="icon flaticon-more-1"></span>
+                </header>
+                <div class="board-content">
+                  <ul class="list">
+                    <%= render @in_progress_tasks %>
+                  </ul>
+                </div>
+              </article>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <article class="board green">
+                <header>
+                  <h4>Falhas <span>(<%= @review_tasks.count %>)</span></h4>
+                  <span class="icon flaticon-more-1"></span>
+                </header>
+                <div class="board-content">
+                  <ul class="list">
+                    <%= render @review_tasks %>
+                  </ul>
+                </div>
+              </article>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <article class="board blue">
+                <header>
+                  <h4>Completas <span>(<%= @done_tasks.count %>)</span></h4>
+                  <span class="icon flaticon-more-1"></span>
+                </header>
+                <div class="board-content">
+                  <ul class="list">
+                    <%= render @done_tasks %>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Main Content-->
+
+<!-- Start Footer -->
+<footer>
+
+</footer>
+<!-- End Footer -->
+
+<!-- Start Script -->
+<script src="Assets/javascript/min.js"></script>
+</body>
+</html>

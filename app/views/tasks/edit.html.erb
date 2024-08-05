@@ -1,35 +1,12 @@
-<h1>Editar Tarefa</h1>
+<%= turbo_frame_tag 'modal' do %>
+  <div class="modal">
+    <h1>Editar Tarefa</h1>
 
-<%= form_with model: @task, local: true do |form| %>
-  <% if @task.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@task.errors.count, "erro") %> proibiu essa tarefa de ser salva:</h2>
-      <ul>
-        <% @task.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+    <%= render 'form' %>
 
-  <div class="field">
-    <%= form.label :name %>
-    <%= form.text_field :name %>
-  </div>
-
-  <div class="field">
-    <%= form.label :status %>
-    <%= form.select :status, options_for_select([['Pendente', 'pendente'], ['Em Progresso', 'em_progresso'], ['Concluída', 'concluida'], ['Falha', 'falha']], @task.status) %>
-  </div>
-
-  <div class="field">
-    <%= form.label :url %>
-    <%= form.text_field :url %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
+    <%= link_to 'Voltar', tasks_path, data: {
+      controller: 'modals',
+      action: "modals#close"
+    }, class: 'cancel-button' %>
   </div>
 <% end %>
-
-<%= link_to 'Voltar', tasks_path %>

@@ -51,6 +51,8 @@ gem 'nokogiri'
 gem 'httparty'
 gem 'webmock'
 gem 'bcrypt', '~> 3.1.7'
+gem 'dotenv-rails', groups: [:development, :test]
+
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -78,3 +80,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "tailwindcss-rails", "~> 2.6"

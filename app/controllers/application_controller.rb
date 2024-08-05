@@ -4,12 +4,13 @@ class ApplicationController < ActionController::Base
   private
 
   def authenticate_user!
-    unless current_user
-      redirect_to login_path, alert: 'Você precisa estar logado para acessar esta página.'
-    end
-  end
-
-  def current_user
-    @current_user ||= User.find_by(id: session[:user_id])
+    # token = request.headers['Authorization']
+    # auth_service = AuthenticationService.validate_token(token)
+    #
+    # if auth_service.present?
+    #   render :index
+    # else
+    #   render plain: 'Usuário não encontrado', status: :unauthorized
+    # end
   end
 end
