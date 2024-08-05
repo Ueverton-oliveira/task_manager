@@ -1,17 +1,19 @@
-<div id="<%= dom_id task %>">
-  <p>
-    <strong>Name:</strong>
-    <%= task.name %>
-  </p>
-
-  <p>
-    <strong>Status:</strong>
-    <%= task.status %>
-  </p>
-
-  <p>
-    <strong>Url:</strong>
-    <%= task.url %>
-  </p>
-
-</div>
+<li class="el">
+  <% if task.task_type == 'bug' %>
+    <div class="task red">
+  <% elsif task.task_type == 'story' %>
+    <div class="task yellow">
+  <% elsif task.task_type == 'task' %>
+    <div class="task green">
+  <% end %>
+  <header>
+    <h3><%= task.name %></h3>
+<!--    <span class="icon flaticon-edit"></span>-->
+  </header>
+  <div class="task-content">
+    <%= task.description %>
+  </div>
+  <%= link_to 'Mostrar', task %>
+  <%= link_to 'Editar', edit_task_path(task) %>
+  <%= link_to 'Excluir', task, method: :delete, data: { confirm: 'Você tem certeza?' } %>
+</li>
