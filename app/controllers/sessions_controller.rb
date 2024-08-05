@@ -1,23 +1,38 @@
-# app/controllers/sessions_controller.rb
 class SessionsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:new, :create]
-
-  def new; end
+  def new
+    @user = User.new
+    render 'sessions/new'
+  end
 
   def create
-    user = User.find_by(email: params[:email])
+    response = AuthenticationService.register(params[:email], params[:password])
 
-    if user&.authenticate(params[:password])
-      session[:user_id] = user.id
-      redirect_to tasks_path, notice: 'Login realizado com sucesso.'
+    if response[:success]
+      redirect_to login_path, notice: 'Usuário registrado com sucesso! Por favor, faça login.'
     else
-      flash.now[:alert] = 'Email ou senha inválidos.'
+      flash.now[:alert] = response[:errors].join(', ')
       render :new
     end
   end
 
+  def login
+    render 'sessions/login'
+  end
+
+  def authenticate
+    response = AuthenticationService.login(params[:email], params[:password])
+
+    if response[:success]
+      session[:auth_token] = response[:token]
+      redirect_to root_path, notice: 'Login realizado com sucesso!'
+    else
+      flash[:alert] = response[:errors].join(', ')
+      redirect_to login_path
+    end
+  end
+
   def destroy
-    session[:user_id] = nil
-    redirect_to root_path, notice: 'Logout realizado com sucesso.'
+    session[:auth_token] = nil
+    redirect_to login_path, notice: 'Logout realizado com sucesso.'
   end
 end
