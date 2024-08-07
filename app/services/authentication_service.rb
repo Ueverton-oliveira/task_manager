@@ -1,23 +1,16 @@
-require 'httparty'
-
 class AuthenticationService
   include HTTParty
 
-  def initialize(email = nil, password = nil, token)
-    @token = token
-    @email = email
-    @password = password
-  end
-
-  def self.register(email, password)
+  def self.register(email, password, name)
     response = post("#{ENV['AUTH_SERVICE_URL']}/api/v1/register",
-                             body: { email: email, password: password }.to_json,
-                             headers: { 'Content-Type' => 'application/json' })
+                    body: { email: email, password: password, name: name }.to_json,
+                    headers: { 'Content-Type' => 'application/json' })
 
-    if response.code == 201
-      { success: true, message: response.parsed_response['message'] }
+    if response.success?
+      { success: true, message: 'User created successfully' }
     else
-      { success: false, errors: response.parsed_response['errors'] }
+      errors = response.parsed_response['errors']
+      { success: false, errors: errors }
     end
   end
 
@@ -42,15 +35,30 @@ class AuthenticationService
   def self.validate_token(token)
     return false if token.nil?
 
-    response = post("#{ENV['AUTH_SERVICE_URL']}/api/v1/validate_token",
-                             body: { token: token }.to_json,
-                             headers: { 'Content-Type' => 'application/json' })
+    response =  post("#{ENV['AUTH_SERVICE_URL']}/api/v1/validate_token",
+                     body: { token: token }.to_json,
+                     headers: { 'Content-Type' => 'application/json' })
 
     if response.code == 200
-      @user_id = response.parsed_response['user_id']
       true
     else
       false
+    end
+  end
+
+  def self.fetch_user_from_token(token)
+    return nil if token.nil?
+
+    response =  post("#{ENV['AUTH_SERVICE_URL']}/api/v1/validate_token",
+                     body: { token: token }.to_json,
+                     headers: { 'Content-Type' => 'application/json' })
+
+    if response.code == 200
+      user_data =  JSON.parse(response)
+
+      User.create(id: user_data['id'], email: user_data['email'], name: user_data['name'])
+    else
+      nil
     end
   end
 end
