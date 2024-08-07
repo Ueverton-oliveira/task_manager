@@ -1,14 +1,37 @@
-<h1>Tarefa: <%= @task.name %></h1>
+<%= turbo_frame_tag 'modal' do %>
+  <div class="modal" style="width: 450px">
+    <h1><strong>Tarefa:</strong> <%= @task.name %></h1>
 
-<p>
-  <strong>Status:</strong>
-  <%= @task.status %>
-</p>
+    <p>
+      <strong>Descrição:</strong>
+      <%= @task.description %>
+    </p>
 
-<p>
-  <strong>URL:</strong>
-  <%= @task.url %>
-</p>
+    <p>
+      <strong>Status:</strong>
+      <%= @task.status %>
+    </p>
 
-<%= link_to 'Editar', edit_task_path(@task) %>
-<%= link_to 'Voltar', tasks_path %>
+    <p>
+      <strong>Tipo:</strong>
+      <%= @task.task_type %>
+    </p>
+
+    <p>
+      <strong>URL:</strong>
+      <%= @task.url %>
+    </p>
+
+    <div class="actions">
+      <div style="align-content: center; margin-top: 5px; padding: 4px; color: white ;background-color: rgb(65 65 74 / 27%); justify-content: center; align-items: center; border-radius: 4px; border: none; font-size: 15px">
+        <%= link_to 'Voltar', tasks_path, data: {
+          controller: 'modals',
+          action: "modals#close"
+        } %>
+      </div>
+
+      <div style=" ; margin-top: 5px; padding: 4px; color: white ;background-color: #1530ff; justify-content: flex-end ; align-items: center; border-radius: 4px; border: none; font-size: 15px">
+        <%= link_to 'Editar', edit_task_path(@task) %>
+      </div>
+    </div>
+<% end %>

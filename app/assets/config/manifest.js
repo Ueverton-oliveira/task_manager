@@ -1,6 +1,8 @@
 //= link_tree ../images
 //= link_directory ../stylesheets .css
 //= link tailwind.css
+//= link application.js
+
 
 $('#exampleModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal
@@ -11,3 +13,11 @@ $('#exampleModal').on('show.bs.modal', function (event) {
   modal.find('.modal-title').text('New message to ' + recipient)
   modal.find('.modal-body input').val(recipient)
 })//= link_tree ../builds
+
+document.querySelectorAll('a[data-method="delete"]').forEach(el => {
+  el.addEventListener('click', function(event) {
+    if (!confirm('Você tem certeza?')) {
+      event.preventDefault();
+    }
+  });
+});

@@ -4,5 +4,17 @@
 
 import { application } from "./application"
 
+import DialogController from "./dialog_controller"
+application.register("dialog", DialogController)
+
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)
+
 import ModalsController from "./modals_controller"
 application.register("modals", ModalsController)
+
+import RemoteModalController from "./remote_modal_controller"
+application.register("remote-modal", RemoteModalController)
+
+import TurboController from "./turbo_controller"
+application.register("turbo", TurboController)

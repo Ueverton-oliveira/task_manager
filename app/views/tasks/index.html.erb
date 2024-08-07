@@ -55,7 +55,7 @@
   <div class="account">
     <figure>
       <div class="avatar">
-        <img src="Assets/images/avatar/man/23.jpg" alt="" class="w-100 h-100">
+        <img src="Assets/images/avatar/man/photo.jpg" alt="" class="w-100 h-100">
         <div class="effect"></div>
       </div>
       <figcaption>
@@ -63,10 +63,10 @@
       </figcaption>
     </figure>
   </div>
-  <div class="search">
-    <span class="icon flaticon-search color-fff"></span>
-    <input type="text" placeholder="Search" name="search" id="search">
-  </div>
+<!--  <div class="search">-->
+<!--    <span class="icon flaticon-search color-fff"></span>-->
+<!--    <input type="text" placeholder="Search" name="search" id="search">-->
+<!--  </div>-->
 </header>
 <!-- End Header -->
 
@@ -83,13 +83,10 @@
             <% end %>
           </li>
           <li>
-            <% if session[:auth_token].present? %>
-              <%= link_to 'Logout', logout_path, method: :delete, class: 'btn btn-danger' %>
-            <% end %>
-            <a href="#" title="">
+            <%= link_to login_path, class: "active" do %>
               <span class="icon flaticon-power"></span>
-              <span class="text">Exit</span>
-            </a>
+              <span class="text">Sair</span>
+            <% end %>
           </li>
         </ul>
       </nav>
@@ -119,8 +116,9 @@
           </ul>
           <div class="action">
             <button class="btn btn-blue">
-              <span class="flaticon-add"></span>
-              <%= link_to 'Nova Tarefa', new_task_path, data: { turbo_frame: 'modal' } %>
+              <%= link_to new_task_path, data: { turbo_frame: :remote_modal } do %>
+                <span class="flaticon-add" style="color: white"></span>
+              <% end %>
             </button>
           </div>
         </header>

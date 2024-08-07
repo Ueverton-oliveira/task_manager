@@ -13,7 +13,21 @@
   <div class="task-content">
     <%= task.description %>
   </div>
-  <%= link_to 'Mostrar', task %>
-  <%= link_to 'Editar', edit_task_path(task) %>
-  <%= link_to 'Excluir', task, method: :delete, data: { confirm: 'Você tem certeza?' } %>
+
+  <div style="display: flex; justify-content: space-evenly; margin-top: 5px">
+    <div>
+      <%= link_to 'Mostrar', task, data: { turbo_frame: :remote_modal } %>
+    </div>
+    <div>
+      <%= link_to 'Editar', edit_task_path(task), data: { turbo_frame: :remote_modal } %>
+    </div>
+    <div>
+      <a data-confirm="Você tem certeza?" data-method="delete">
+        <%= button_to 'Excluir', task_path(task), method: :delete, data: { confirm: 'Você tem certeza?' } %>
+      </a>
+    </div>
+  </div>
+
+
+
 </li>

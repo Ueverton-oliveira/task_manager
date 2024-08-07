@@ -5,6 +5,10 @@ require_relative '../config/environment'
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
 
+require 'webmock/rspec'
+
+WebMock.disable_net_connect!(allow_localhost: true)
+
 begin
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
@@ -19,6 +23,18 @@ RSpec.configure do |config|
   # FactoryBot
   config.include FactoryBot::Syntax::Methods
 
+  # Configuração para autenticar o usuário nos testes
+  config.before(:each) do
+    if defined?(Warden)
+      Warden.test_mode!
+    end
+  end
+
+  config.after(:each) do
+    if defined?(Warden)
+      Warden.test_reset!
+    end
+  end
 
   # Configs Webmock
   config.before(:suite) do

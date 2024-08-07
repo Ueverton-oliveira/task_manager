@@ -1,9 +1,9 @@
 <!-- app/views/sessions/login.html.erb -->
 
-<section class="bg-gray-100 min-h-screen flex items-center justify-content-center">
+<section class="modal" style="width: 350px">
   <div class="flex rounded-2x1">
-    <div class="w-1/2">
-      <h2 class="font-bold text-2x1">Login</h2>
+    <div style="display: flex; align-items: center; justify-content: center; font-size: 24px;">
+      <h1>Login</h1>
     </div>
 
     <%= form_with(url: login_path, method: :post, html: { class: 'max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mx-auto' }) do |form| %>
@@ -11,18 +11,33 @@
         <p class="bg-red-100 text-red-700 rounded p-2 mb-4"><%= flash[:alert] %></p>
       <% end %>
 
-      <div class="mb-4">
-        <%= form.label :email, class: 'block text-gray-700 text-sm font-bold mb-2' %>
-        <%= form.email_field :email, class: 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' %>
+      <div class="form-group">
+        <div style="display: flex">
+          <%= form.label :email %>
+        </div>
+        <div style="display: flex; width: 100%">
+          <%= form.email_field :email, class: 'form-control', style:"width: 100%" %>
+        </div>
       </div>
 
-      <div class="mb-6">
-        <%= form.label :password, class: 'block text-gray-700 text-sm font-bold mb-2' %>
-        <%= form.password_field :password, class: 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' %>
+      <div class="form-group">
+        <div style="display: flex">
+          <%= form.label :senha %>
+        </div>
+        <div style="display: flex; width: 100%">
+          <%= form.password_field :password, class: 'form-control', style:"width: 100%" %>
+        </div>
       </div>
 
-      <div class="flex items-center justify-between">
-        <%= form.submit 'Login', class: 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' %>
+      <div style="align-content: center; margin-top: 5px; padding: 4px; color: white ;background-color: rgb(65 65 74 / 27%); justify-content: center; align-items: center; border-radius: 4px; border: none; font-size: 15px">
+        <div style="width: 100% position: relative; left: 6rem !important">
+          <%= link_to 'Registrar', signup_path, data: { turbo_frame: :remote_modal } %>
+        </div>
+
+      </div>
+
+      <div style=" ; margin-top: 5px; padding: 4px; color: white ;background-color: #1530ff; justify-content: flex-end ; align-items: center; border-radius: 4px; border: none; font-size: 15px">
+        <%= form.submit 'Login' %>
       </div>
     <% end %>
   </div>

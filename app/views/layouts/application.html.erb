@@ -8,10 +8,19 @@
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag 'application' %>
+
   </head>
 
   <body>
-    <%= turbo_frame_tag "modal" %>
+    <% flash.each do |type, message| %>
+      <div class="flash <%= type %>">
+        <%= message %>
+      </div>
+    <% end %>
+
     <%= yield %>
+
+    <%= turbo_frame_tag :remote_modal %>
   </body>
 </html>
