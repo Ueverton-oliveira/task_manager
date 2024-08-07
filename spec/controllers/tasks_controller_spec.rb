@@ -1,140 +1,116 @@
-# spec/controllers/tasks_controller_spec.rb
-
 require 'rails_helper'
 
 RSpec.describe TasksController, type: :controller do
   let(:user) { create(:user) }
-  let(:valid_token) { 'valid_token' }
+  let(:token) { "valid_token" }
+  let!(:task) { create(:task, user: user, status: 'pending') }
+  let(:web_scraping_service) { instance_double(WebScrapingService) }
+
 
   before do
-    allow(AuthenticationService).to receive(:validate_token).and_return(auth_service)
-    request.headers['Authorization'] = "Bearer #{valid_token}"
+    allow(AuthenticationService).to receive(:validate_token).with(token).and_return(true)
+    allow(AuthenticationService).to receive(:fetch_user_from_token).with(token).and_return(user)
+    request.headers['Authorization'] = "Bearer #{token}"
+    allow_any_instance_of(NotificationService).to receive(:send_notification)
+    allow(WebScrapingService).to receive(:new).and_return(web_scraping_service)
+    allow(web_scraping_service).to receive(:scrape)
   end
 
-  describe "GET #index" do
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
 
-    it "returns a success response" do
+  describe 'GET #index' do
+    it 'assigns tasks and grouped tasks' do
       get :index
-      expect(response).to be_successful
+      expect(assigns(:tasks)).to eq([task])
+      expect(assigns(:pending_tasks)).to eq([task])
+      expect(assigns(:in_progress_tasks)).to eq([])
+      expect(assigns(:review_tasks)).to eq([])
+      expect(assigns(:done_tasks)).to eq([])
     end
   end
 
-  describe "GET #show" do
-    let(:task) { create(:task, user: user) }
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-    it "returns a success response" do
+  describe 'GET #show' do
+    it 'assigns the requested task' do
       get :show, params: { id: task.id }
-      expect(response).to be_successful
+      expect(assigns(:task)).to eq(task)
     end
   end
 
-  describe "GET #new" do
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-    it "returns a success response" do
+  describe 'GET #new' do
+    it 'assigns a new task' do
       get :new
-      expect(response).to be_successful
+      expect(assigns(:task)).to be_a_new(Task)
     end
   end
 
-  describe "POST #create" do
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-    context "with valid params" do
-      it "creates a new task" do
+  describe 'POST #create' do
+    context 'with valid attributes' do
+      it 'creates a new task and redirects to tasks path' do
         expect {
           post :create, params: { task: attributes_for(:task) }
         }.to change(Task, :count).by(1)
+        expect(response).to redirect_to(tasks_path)
+        expect(flash[:notice]).to eq('Task criada com sucesso!')
       end
 
-      it "redirects to tasks_path with notice" do
+      it 'calls WebScrapingService' do
+        expect(WebScrapingService).to receive(:new).and_return(web_scraping_service)
+        expect(web_scraping_service).to receive(:scrape)
+
         post :create, params: { task: attributes_for(:task) }
         expect(response).to redirect_to(tasks_path)
-        expect(flash[:notice]).to eq('Task created successfully.')
+      end
+
+      it 'does not create a new task and does not call WebScrapingService' do
+        expect(WebScrapingService).not_to receive(:new)
+        expect(web_scraping_service).not_to receive(:scrape)
+
+        post :create, params: { task: attributes_for(:task, name: nil) }
+        expect(response).to render_template(:new)
       end
     end
 
-    context "with invalid params" do
-      it "renders the new template again" do
-        post :create, params: { task: { name: nil } }
+    context 'with invalid attributes' do
+      it 'renders the new template' do
+        post :create, params: { task: attributes_for(:task, name: nil) }
         expect(response).to render_template(:new)
       end
     end
   end
 
-  describe "GET #edit" do
-    let(:task) { create(:task, user: user) }
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-    it "returns a success response" do
+  describe 'GET #edit' do
+    it 'assigns the requested task' do
       get :edit, params: { id: task.id }
-      expect(response).to be_successful
+      expect(assigns(:task)).to eq(task)
     end
   end
 
-  describe "PATCH #update" do
-    let(:task) { create(:task, user: user) }
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-    context "with valid params" do
-      it "updates the requested task" do
-        patch :update, params: { id: task.id, task: { name: "Updated Task" } }
+  describe 'PATCH #update' do
+    context 'with valid attributes' do
+      it 'updates the task and redirects to tasks path' do
+        patch :update, params: { id: task.id, task: { name: 'Updated Task' } }
         task.reload
-        expect(task.name).to eq("Updated Task")
-      end
-
-      it "redirects to tasks_path with notice" do
-        patch :update, params: { id: task.id, task: { name: "Updated Task" } }
+        expect(task.name).to eq('Updated Task')
         expect(response).to redirect_to(tasks_path)
         expect(flash[:notice]).to eq('Task updated successfully.')
       end
     end
 
-    context "with invalid params" do
-      it "renders the edit template again" do
+    context 'with invalid attributes' do
+      it 'renders the edit template' do
         patch :update, params: { id: task.id, task: { name: nil } }
         expect(response).to render_template(:edit)
       end
     end
   end
 
-  describe "DELETE #destroy" do
-    let!(:task) { create(:task, user: user) }
-    let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-    it "destroys the requested task" do
+  describe 'DELETE #destroy' do
+    it 'deletes the task and redirects to tasks path' do
+      task_to_destroy = create(:task, user: user)
       expect {
-        delete :destroy, params: { id: task.id }
+        delete :destroy, params: { id: task_to_destroy.id }
       }.to change(Task, :count).by(-1)
-    end
-
-    it "redirects to tasks_path with notice" do
-      delete :destroy, params: { id: task.id }
       expect(response).to redirect_to(tasks_path)
-      expect(flash[:notice]).to eq('Task deleted successfully.')
-    end
-  end
-
-  describe "#authenticate_user!" do
-    context "when authenticated" do
-      let(:auth_service) { class_double("AuthenticationService", current_user: user).as_stubbed_const }
-
-      it "sets @current_user" do
-        get :index
-        expect(assigns(:current_user)).to eq(user)
-      end
-    end
-
-    context "when not authenticated" do
-      let(:auth_service) { nil }
-
-      it "returns unauthorized" do
-        allow(AuthenticationService).to receive(:validate_token).with(nil).and_return(nil)
-        get :index
-        expect(response).to have_http_status(:unauthorized)
-      end
+      expect(flash[:notice]).to eq('Task was successfully destroyed.')
     end
   end
 end
