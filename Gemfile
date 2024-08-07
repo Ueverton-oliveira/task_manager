@@ -49,7 +49,7 @@ gem 'jwt'
 gem 'devise-jwt'
 gem 'nokogiri'
 gem 'httparty'
-gem 'webmock'
+
 gem 'bcrypt', '~> 3.1.7'
 gem 'dotenv-rails', groups: [:development, :test]
 
@@ -62,6 +62,8 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'shoulda-matchers', require: false
   gem 'faker'
+  gem 'webmock'
+  gem 'pry'
 end
 
 group :development do
