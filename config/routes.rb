@@ -6,8 +6,5 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#authenticate'
   delete '/logout', to: 'sessions#destroy', as: :logout
 
-  # Rota para realizar o logout
-  delete 'logout', to: 'sessions#destroy'
-
   resources :tasks
 end
