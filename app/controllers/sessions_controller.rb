@@ -1,11 +1,16 @@
 class SessionsController < ApplicationController
+  add_flash_types :warning
+
+  skip_before_action :authenticate_user!, only: [:new, :create, :login, :authenticate]
+
+
   def new
     @user = User.new
     render 'sessions/new'
   end
 
   def create
-    response = AuthenticationService.register(params[:email], params[:password])
+    response = AuthenticationService.register(params[:email], params[:password], params[:name])
 
     if response[:success]
       redirect_to login_path, notice: 'Usuário registrado com sucesso! Por favor, faça login.'
@@ -33,6 +38,7 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:auth_token] = nil
-    redirect_to login_path, notice: 'Logout realizado com sucesso.'
+    flash.now[:notice] = 'Logout realizado com sucesso.'
+    redirect_to login_path
   end
 end
