@@ -1,15 +1,15 @@
 class TasksController < ApplicationController
-  before_action :require_login
+  before_action :authenticate_user!
   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
   def index
     @tasks = Task.all
     # @tasks = current_user.tasks
 
-    @pending_tasks = @tasks.where(status: 'pending')
-    @in_progress_tasks = @tasks.where(status: 'in_progress')
-    @review_tasks = @tasks.where(status: 'review')
-    @done_tasks = @tasks.where(status: 'done')
+    @pending_tasks = @tasks.where(status: 'pending').order(created_at: :desc)
+    @in_progress_tasks = @tasks.where(status: 'in_progress').order(created_at: :desc)
+    @review_tasks = @tasks.where(status: 'failed').order(created_at: :desc)
+    @done_tasks = @tasks.where(status: 'completed').order(created_at: :desc)
 
   end
 
@@ -21,10 +21,11 @@ class TasksController < ApplicationController
 
   def create
     @task = Task.new(task_params)
+    @task.user = current_user
 
     if @task.save
-      NotificationService.send_notification(@task, 'created')
-      WebScrapingService.scrape(@task.url) if @task.url.present?
+      NotificationService.new(@task).send_notification
+      WebScrapingService.new((@task.url)).scrape if @task.url.present?
 
       redirect_to tasks_path, notice: 'Task criada com sucesso!'
     else
@@ -38,7 +39,7 @@ class TasksController < ApplicationController
     @task = Task.find(params[:id])
 
     if @task.update(task_params)
-      NotificationService.send_notification(@task, 'updated')
+      NotificationService.new(@task).send_notification
       redirect_to tasks_path, notice: 'Task updated successfully.'
     else
       render :edit
@@ -48,8 +49,11 @@ class TasksController < ApplicationController
   def destroy
     @task = Task.find(params[:id])
     @task.destroy
-    NotificationService.send_notification(@task, 'deleted')
-    redirect_to tasks_path, notice: 'Task deleted successfully.'
+
+    respond_to do |format|
+      format.html { redirect_to tasks_path, notice: 'Task was successfully destroyed.' }
+      format.json { head :no_content }
+    end
   end
 
   private
@@ -61,16 +65,4 @@ class TasksController < ApplicationController
   def task_params
     params.require(:task).permit(:name, :status, :url, :description, :task_type)
   end
-
-  def require_login
-    unless current_user
-      flash[:alert] = "Você precisa estar logado para acessar esta página."
-      redirect_to login_path
-    end
-  end
-
-  def current_user
-    session[:auth_token]  # Retorna o token de autenticação da sessão
-  end
-
 end
