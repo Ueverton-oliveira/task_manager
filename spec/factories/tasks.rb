@@ -6,5 +6,6 @@ FactoryBot.define do
     user_id { FactoryBot.create(:user).id }
     description { Faker::Lorem.paragraph(sentence_count: 4) }
     task_type { Task.task_types.keys.sample }
+    association :user
   end
 end
