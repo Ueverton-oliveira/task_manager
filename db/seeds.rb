@@ -4,7 +4,7 @@ require 'faker'
 Task.destroy_all
 
 # Criar um usuário padrão (opcional)
-user = User.create(email: Faker::Internet.email)
+user = User.create(email: 'ueverton.souz@gmail.com', name: 'Ueverton')
 
 # Gerar dados de exemplo usando Faker e sample para enums
 20.times do
@@ -14,9 +14,9 @@ user = User.create(email: Faker::Internet.email)
     url: Faker::Internet.url,
     user_id: user.id,
     description: Faker::Lorem.paragraph(sentence_count: 4),
-    task_type: Task.task_types.keys.sample
+    task_type: Task.task_types.keys.sample,
+    user_id: user.id
   )
-
 end
 
 puts "Tasks geradas com sucesso!"
