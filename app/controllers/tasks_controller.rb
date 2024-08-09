@@ -3,8 +3,8 @@ class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
   def index
-    @tasks = Task.all
-    # @tasks = current_user.tasks
+    tasks = Task.all
+    @tasks = current_user.tasks
 
     @pending_tasks = @tasks.where(status: 'pending').order(created_at: :desc)
     @in_progress_tasks = @tasks.where(status: 'in_progress').order(created_at: :desc)
